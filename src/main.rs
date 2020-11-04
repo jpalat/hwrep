@@ -2,6 +2,8 @@ extern crate procfs;
 use procfs::CpuInfo;
 use procfs::Meminfo;
 
+use num_format::{Locale, ToFormattedString};
+
 fn main() {
     println!("Gathering CPU Info");
     let cpu = CpuInfo::new() ;
@@ -41,16 +43,7 @@ fn main() {
     let mb = kb / 1024;
     let gb = mb / 1024;
 
-    println!("Memory in KiB: {} MiB: {} GiB: {}", kb, mb, gb);
+    println!("\nMemory in KiB: {} MiB: {} GiB: {}", kb.to_formatted_string(&Locale::en), mb.to_formatted_string(&Locale::en), gb);
     
 
-
-    // use sysinfo::{System, SystemExt, DiskExt};
-
-    // let s = System::new();
-
-    // let system = System::new_all();
-    // for disk in system.get_disks() {
-    //     println!("{:?}: {:?}", disk.get_name(), disk.get_type());
-    // }
 }
