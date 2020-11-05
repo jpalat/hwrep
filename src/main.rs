@@ -2,7 +2,7 @@ extern crate nix;
 extern crate procfs;
 
 use nix::sys::statvfs::statvfs;
-use procfs::CpuInfo;
+
 use procfs::Meminfo;
 use std::cmp;
 use std::fs::File;
@@ -13,6 +13,9 @@ use std::process;
 mod disks;
 use disks::Disks;
 
+mod system;
+use system::CPU;
+
 use num_format::{Locale, ToFormattedString};
 
 const FS_SPEC: usize = 0;
@@ -20,37 +23,9 @@ const FS_FILE: usize = 1;
 
 fn main() {
     println!("Gathering CPU Info");
-    let cpu = CpuInfo::new() ;
-    let model;
-    let mut cores = 1;
+    let _cpu = CPU::new();
+
     
-
-    match cpu {
-        Err(_) => println!("No CPU available"),
-        Ok(cpu) =>{
-            match cpu.model_name(0) {
-                None => println!("No CPU model info available"),
-                Some(model_id) => {
-                    model = model_id;
-                    println!("Model: {}", model);
-                }
-            }
-            match cpu.get_info(0) {
-                None => println!("No additional info available."),
-                Some(details) => {
-                    // println!("{:#?}", details);
-                    let cpuc = details.get(&"cpu cores").unwrap();
-                    cores = cpuc.parse().unwrap_or(0);
-                    println!("Cores / CPU: {}", cores);
-                }
-            }
-            let total_cores = cpu.num_cores();
-            
-            println!("Total Cores: {:?}", total_cores);
-            println!("Sockets: {}", total_cores/cores);
-        }
-
-    }
     let memory = Meminfo::new().unwrap();
     let b = memory.mem_total;
     let kb = b / 1024;
