@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 procfs = "0.8.1"
+num-format = "0.4.0"
+nix = "0.19.0"
