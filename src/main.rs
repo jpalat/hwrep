@@ -20,13 +20,7 @@ fn main() {
 
     
     let memory = Meminfo::new().unwrap();
-    let b = memory.mem_total;
-    let kb = b / 1024;
-    let mb = kb / 1024;
-    let gb = mb / 1024;
-
-    println!("\nMemory in KiB: {} MiB: {} GiB: {}", kb.to_formatted_string(&Locale::en), mb.to_formatted_string(&Locale::en), gb);
-    
+    println!("Memory: {}", iec(memory.mem_total));
 
 
     
