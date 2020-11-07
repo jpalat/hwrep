@@ -1,7 +1,6 @@
 extern crate nix;
 extern crate procfs;
 
-
 use procfs::Meminfo;
 
 mod disks;
@@ -10,31 +9,16 @@ use disks::Disks;
 mod system;
 use system::CPU;
 
-use num_format::{Locale, ToFormattedString};
-
-
-
 fn main() {
     println!("Gathering CPU Info");
     let _cpu = CPU::new();
 
-    
     let memory = Meminfo::new().unwrap();
     println!("Memory: {}", iec(memory.mem_total));
 
-
-    
-
     let dlist = Disks::new();
 
-    let headers = [
-        "Filesystem",
-        "Size",
-        "Used",
-        "Avail",
-        "Use%",
-        "Mounted on",
-    ];
+    let headers = ["Filesystem", "Size", "Used", "Avail", "Use%", "Mounted on"];
     // let headers: Vec<ColoredString> = headers.iter().map(|x| x.yellow()).collect();
     println!(
         "{:width$} {:>5} {:>5} {:>5} {:>5} {}",
@@ -69,13 +53,9 @@ fn main() {
             width = dlist.max_width
         );
     }
-    
 
-    
-
-// http://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python
+    // http://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python
 }
-
 
 pub fn iec(n: u64) -> String {
     let units = ["", "k", "M", "G", "T", "P", "E", "Z", "Y"];

@@ -6,7 +6,6 @@ use std::process;
 
 use nix::sys::statvfs::statvfs;
 
-
 const FS_SPEC: usize = 0;
 const FS_FILE: usize = 1;
 
@@ -18,7 +17,7 @@ pub struct Disk {
     pub avail: u64,
     pub percent: f64,
     pub mount: String,
-} 
+}
 
 impl Disk {
     pub fn new(filesystem: &str, size: u64, avail: u64, mount: &str) -> Disk {
@@ -33,7 +32,7 @@ impl Disk {
             avail,
         }
     }
-}  
+}
 
 pub struct Disks {
     pub disks: Vec<Disk>,
@@ -41,7 +40,7 @@ pub struct Disks {
 }
 
 impl Disks {
-    pub fn new() -> Disks{
+    pub fn new() -> Disks {
         println!("\nDisk Info");
         let file = match File::open("/proc/mounts") {
             Ok(f) => f,
@@ -71,16 +70,15 @@ impl Disks {
                     if size == 0 {
                         continue;
                     }
-    
+
                     let d = Disk::new(fields[FS_SPEC], size, avail, fields[FS_FILE]);
                     max_width = cmp::max(max_width, d.filesystem.len());
-    
+
                     disk_list.push(d);
                 }
                 Err(err) => println!("Error 3: {}", err),
             }
         }
-
 
         Disks {
             disks: disk_list,

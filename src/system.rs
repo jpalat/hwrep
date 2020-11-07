@@ -9,9 +9,8 @@ pub struct CPU {
 }
 
 impl CPU {
-    pub fn new () -> CPU {
-        
-        let mut cmod = "No CPU Info Available".to_owned();;
+    pub fn new() -> CPU {
+        let mut cmod = "No CPU Info Available".to_owned();
         let mut lcore = 1;
         let mut sock = 1;
 
@@ -19,7 +18,7 @@ impl CPU {
 
         match cpu {
             Err(_) => println!("No CPU available"),
-            Ok(cpu) =>{
+            Ok(cpu) => {
                 match cpu.model_name(0) {
                     None => println!("No CPU model info available"),
                     Some(model_id) => {
@@ -37,18 +36,16 @@ impl CPU {
                     }
                 }
                 let total_cores = cpu.num_cores();
-                
+
                 println!("Total Cores: {:?}", total_cores);
-                println!("Sockets: {}", total_cores/lcore);
+                println!("Sockets: {}", total_cores / lcore);
             }
-    
         }
         CPU {
             model: cmod.to_string(),
             logical_cores: lcore,
-            physical_cores: lcore /2,
+            physical_cores: lcore / 2,
             sockets: 1,
         }
-
     }
 }
