@@ -1,7 +1,4 @@
 extern crate nix;
-extern crate procfs;
-
-use procfs::Meminfo;
 
 mod disks;
 use disks::Disks;
@@ -12,10 +9,14 @@ use utils::iec;
 
 fn main() {
     println!("Gathering CPU Info");
-    let _cpu = CPU::new();
+    let cpu = CPU::new();
+    println!("Model: {}", cpu.model);
+    println!("Cores per Socket: {}", cpu.physical_cores);
+    println!("Thread(s) per Core: {}", cpu.threads_per_core);
+    println!("Total Cores: {:?}", cpu.execution_units);
+    println!("Sockets {}", cpu.sockets);
 
-    let memory = Meminfo::new().unwrap();
-    println!("Memory: {}", iec(memory.mem_total));
+    println!("Memory: {}", iec(system::get_memory()));
 
     let dlist = Disks::new();
 
@@ -54,8 +55,4 @@ fn main() {
             width = dlist.max_width
         );
     }
-
-   
 }
-
-

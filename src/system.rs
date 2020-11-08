@@ -1,18 +1,22 @@
 use procfs::CpuInfo;
+use procfs::Meminfo;
 
 #[derive(Debug)]
 pub struct CPU {
-    model: String,
-    logical_cores: usize,
-    physical_cores: usize,
-    sockets: usize,
+    pub model: String,
+    pub physical_cores: usize,  // cores on chip
+    pub execution_units: usize,   // execution units (physical_cores * # of threads/core)
+    pub threads_per_core: usize,  // threads
+    pub sockets: usize,
 }
 
 impl CPU {
     pub fn new() -> CPU {
         let mut cmod = "No CPU Info Available".to_owned();
-        let mut lcore = 1;
-        let mut sock = 1;
+        let mut exu = 0;
+        let sock =1;
+        let mut socket_cores = 0;
+        let mut siblings = 1;
 
         let cpu = CpuInfo::new();
 
@@ -23,29 +27,34 @@ impl CPU {
                     None => println!("No CPU model info available"),
                     Some(model_id) => {
                         cmod = model_id.to_string();
-                        println!("Model: {}", cmod);
                     }
                 }
                 match cpu.get_info(0) {
                     None => println!("No additional info available."),
                     Some(details) => {
-                        println!("{:#?}", details);
-                        let cpuc = details.get(&"cpu cores").unwrap();
-                        lcore = cpuc.parse().unwrap_or(0);
-                        println!("Cores / CPU: {}", lcore);
+                        // println!("{:#?}", details);
+                        // physical cores
+                        let physical_cores = details.get(&"cpu cores").unwrap();
+                        socket_cores = physical_cores.parse().unwrap_or(0);
+                        // execution units with hyperthreading
+                        let exec_cores = details.get(&"siblings").unwrap();
+                        siblings = exec_cores.parse().unwrap_or(0);
                     }
                 }
-                let total_cores = cpu.num_cores();
-
-                println!("Total Cores: {:?}", total_cores);
-                println!("Sockets: {}", total_cores / lcore);
+                exu = cpu.num_cores();
             }
         }
         CPU {
             model: cmod.to_string(),
-            logical_cores: lcore,
-            physical_cores: lcore / 2,
-            sockets: 1,
+            execution_units: exu,
+            physical_cores: socket_cores,
+            threads_per_core: siblings/socket_cores,
+            sockets: exu/siblings,
         }
     }
+}
+
+pub fn get_memory() -> u64 {
+    let memory = Meminfo::new().unwrap();
+    return memory.mem_total;
 }
