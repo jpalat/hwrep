@@ -14,9 +14,9 @@ fn main() {
     println!("Cores per Socket: {}", cpu.physical_cores);
     println!("Thread(s) per Core: {}", cpu.threads_per_core);
     println!("Total Cores: {:?}", cpu.execution_units);
-    println!("Sockets {}", cpu.sockets);
+    println!("Sockets: {}", cpu.sockets);
 
-    println!("Memory: {}", iec(system::get_memory()));
+    println!("\nMemory: {}", iec(system::get_memory()));
 
     let dlist = Disks::new();
 

@@ -41,7 +41,6 @@ pub struct Disks {
 
 impl Disks {
     pub fn new() -> Disks {
-        println!("\nDisk Info");
         let file = match File::open("/proc/mounts") {
             Ok(f) => f,
             Err(e) => {
