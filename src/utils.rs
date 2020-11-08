@@ -1,5 +1,4 @@
-
- // http://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python
+// http://stackoverflow.com/questions/5194057/better-way-to-convert-file-sizes-in-python
 pub fn iec(n: u64) -> String {
     let units = ["", "k", "M", "G", "T", "P", "E", "Z", "Y"];
 
