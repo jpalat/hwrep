@@ -4,9 +4,9 @@ use procfs::Meminfo;
 #[derive(Debug)]
 pub struct CPU {
     pub model: String,
-    pub physical_cores: usize,  // cores on chip
-    pub execution_units: usize,   // execution units (physical_cores * # of threads/core)
-    pub threads_per_core: usize,  // threads
+    pub physical_cores: usize,   // cores on chip
+    pub execution_units: usize,  // execution units (physical_cores * # of threads/core)
+    pub threads_per_core: usize, // threads
     pub sockets: usize,
 }
 
@@ -14,7 +14,6 @@ impl CPU {
     pub fn new() -> CPU {
         let mut cmod = "No CPU Info Available".to_owned();
         let mut exu = 0;
-        let sock =1;
         let mut socket_cores = 0;
         let mut siblings = 1;
 
@@ -48,8 +47,8 @@ impl CPU {
             model: cmod.to_string(),
             execution_units: exu,
             physical_cores: socket_cores,
-            threads_per_core: siblings/socket_cores,
-            sockets: exu/siblings,
+            threads_per_core: siblings / socket_cores,
+            sockets: exu / siblings,
         }
     }
 }

@@ -70,7 +70,7 @@ impl Disks {
                         continue;
                     }
 
-                    let d = Disk::new(fields[FS_SPEC], size, avail, fields[FS_FILE]);
+                    let d = Disk::new(fields[FS_SPEC], size as u64, avail as u64, fields[FS_FILE]);
                     max_width = cmp::max(max_width, d.filesystem.len());
 
                     disk_list.push(d);

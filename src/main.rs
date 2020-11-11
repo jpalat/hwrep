@@ -6,6 +6,8 @@ mod system;
 use system::CPU;
 mod utils;
 use utils::iec;
+mod network;
+use network::Networks;
 
 fn main() {
     println!("Gathering CPU Info");
@@ -18,12 +20,25 @@ fn main() {
 
     println!("\nMemory: {}", iec(system::get_memory()));
 
+    println!("\nNetwork");
+    let networks = Networks::new();
+
+    match networks {
+        Err(e) => println!("error : {}", e),
+        Ok(n) => {
+            println!("Interface Speed");
+            for network in n.networks {
+                println!("{:10} {}", network.name, network.speed);
+            }
+        }
+    }
+
     let dlist = Disks::new();
 
     let headers = ["Filesystem", "Size", "Used", "Avail", "Use%", "Mounted on"];
     // let headers: Vec<ColoredString> = headers.iter().map(|x| x.yellow()).collect();
     println!(
-        "{:width$} {:>5} {:>5} {:>5} {:>5} {}",
+        "\n{:width$} {:>5} {:>5} {:>5} {:>5} {}",
         headers[0],
         headers[1],
         headers[2],
