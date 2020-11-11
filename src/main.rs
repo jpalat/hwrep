@@ -27,13 +27,11 @@ fn main() {
         Err(e) => println!("error : {}", e),
         Ok(n) => {
             println!("Interface Speed");
-            for network in  n.networks{
+            for network in n.networks {
                 println!("{:10} {}", network.name, network.speed);
             }
         }
     }
-
-    
 
     let dlist = Disks::new();
 
