@@ -14,7 +14,6 @@ impl CPU {
     pub fn new() -> CPU {
         let mut cmod = "No CPU Info Available".to_owned();
         let mut exu = 0;
-        let sock =1;
         let mut socket_cores = 0;
         let mut siblings = 1;
 
