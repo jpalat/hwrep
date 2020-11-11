@@ -41,7 +41,7 @@ impl Networks {
                             speed = "-".to_string();
                             // println!("Error {}", e);
                         }
-                        Ok(s) => speed = s,
+                        Ok(s) => speed = s.trim_end().to_string(),
                     }
                 }
             }
