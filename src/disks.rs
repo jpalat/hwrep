@@ -6,6 +6,8 @@ use std::process;
 
 use nix::sys::statvfs::statvfs;
 
+use crate::utils::DisplayWidth;
+
 const FS_SPEC: usize = 0;
 const FS_FILE: usize = 1;
 
@@ -36,7 +38,6 @@ impl Disk {
 
 pub struct Disks {
     pub disks: Vec<Disk>,
-    pub max_width: usize,
 }
 
 impl Disks {
@@ -50,7 +51,6 @@ impl Disks {
         };
         let reader = BufReader::new(&file);
         let mut disk_list: Vec<Disk> = Vec::new();
-        let mut max_width = 0;
 
         for line in reader.lines() {
             match line {
@@ -71,7 +71,6 @@ impl Disks {
                     }
 
                     let d = Disk::new(fields[FS_SPEC], size as u64, avail as u64, fields[FS_FILE]);
-                    max_width = cmp::max(max_width, d.filesystem.len());
 
                     disk_list.push(d);
                 }
@@ -79,9 +78,16 @@ impl Disks {
             }
         }
 
-        Disks {
-            disks: disk_list,
-            max_width,
+        Disks { disks: disk_list }
+    }
+}
+
+impl DisplayWidth for Disks {
+    fn get_max(&self) -> usize {
+        let mut max_width = 0;
+        for disk in &self.disks {
+            max_width = cmp::max(max_width, disk.filesystem.len());
         }
+        return max_width;
     }
 }
