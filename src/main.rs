@@ -20,6 +20,16 @@ fn main() {
 
     println!("\nMemory: {}", iec(system::get_memory()));
 
+    match system::get_numalayout() {
+        Err(_e) => println!("\nNo NUMA info available."),
+        Ok(nodes) => {
+            println!("\nNUMA layout");
+            for n in nodes {
+                println!("{}", n);
+            }
+        }
+    }
+
     println!("\nNetwork");
     let networks = Networks::new();
 
