@@ -1,6 +1,9 @@
+use std::cmp;
 use std::fs;
 use std::io::Error;
 use std::path::Path;
+
+use crate::DisplayWidth;
 
 #[derive(Debug)]
 pub struct Netinterface {
@@ -52,5 +55,15 @@ impl Networks {
         let n = Networks { networks: new_vec };
 
         return Ok(n);
+    }
+}
+
+impl DisplayWidth for Networks {
+    fn get_max(&self) -> usize {
+        let mut max_width = 0;
+        for network in &self.networks {
+            max_width = cmp::max(max_width, network.name.len());
+        }
+        return max_width;
     }
 }
