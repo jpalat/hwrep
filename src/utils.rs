@@ -7,3 +7,7 @@ pub fn iec(n: u64) -> String {
     let s = (n as f64) / (p as f64);
     format!("{:.0}{}", s, units[i as usize])
 }
+
+pub trait DisplayWidth {
+    fn get_max(&self) -> usize;
+}
