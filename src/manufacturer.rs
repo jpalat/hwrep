@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::cmp;
 use std::fs;
 use std::io::Error;
 use std::path::Path;
@@ -42,5 +43,16 @@ impl Manufacturer {
         }
 
         return Ok(Manufacturer { data: newMan });
+    }
+}
+
+
+impl DisplayWidth for Manufacturer {
+    fn get_max(&self) -> usize {
+        let mut max_width = 0;
+        for (topic, detail) in &self.data {
+            max_width = cmp::max(max_width, topic.len());
+        }
+        return max_width;
     }
 }

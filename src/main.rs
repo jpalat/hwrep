@@ -107,8 +107,9 @@ fn main() {
     match Manufacturer::new() {
         Err(e) => println!("Unable to get info. {:?}", e),
         Ok(m) => {
+            let width = m.get_max();
             for (topic, detail) in m.data {
-                println!("{:?} : {} ", topic, detail);
+                println!("{:width$} : {} ", topic, detail, width = width);
             }
         }
     }
