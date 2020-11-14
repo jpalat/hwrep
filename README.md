@@ -2,7 +2,6 @@
 
 HWRep gathers hardware information from the linux operating system.
 
-HWRep gathers hardware information from the linux operating system.  
 
 ## Items of interest
 
@@ -20,6 +19,11 @@ Storage
 * drives
 * capacity
 
+Manufacturer info
+* Bios/Bios ID
+* Serial number
+* ...
+
 HWRep can display this information to the screen. HWRep can post this information to an HTTP endpoint using a JSON Format.
 
 ## Building
@@ -29,13 +33,18 @@ hwrep can be built as a static binary.
  cargo build --target x86_64-unknown-linux-musl
 ```
 
+Note you will also need a linker on MacOS.
+```
+brew install FiloSottile/musl-cross/musl-cross
+```
+
 Details on how to build for linux on a mac: 
 https://timryan.org/2018/07/27/cross-compiling-linux-binaries-from-macos.html
 
 
 ## Running hwrep
 ```
-./hwrew
+./hwrep
 ```
 
 ## Motivation
