@@ -5,9 +5,11 @@ use disks::Disks;
 mod system;
 use system::CPU;
 mod utils;
+use crate::utils::DisplayWidth;
 use utils::iec;
 mod network;
 use network::Networks;
+use std::cmp;
 
 fn main() {
     println!("Gathering CPU Info");
@@ -36,9 +38,15 @@ fn main() {
     match networks {
         Err(e) => println!("error : {}", e),
         Ok(n) => {
-            println!("Interface Speed");
+            let width = cmp::max(n.get_max(), 10);
+            println!("{:width$} {:>5}", "Interface", "Speed", width = width);
             for network in n.networks {
-                println!("{:10} {}", network.name, network.speed);
+                println!(
+                    "{:width$} {:>5}",
+                    network.name,
+                    network.speed,
+                    width = width
+                );
             }
         }
     }
@@ -55,10 +63,10 @@ fn main() {
         headers[3],
         headers[4],
         headers[5],
-        width = dlist.max_width
+        width = dlist.get_max()
     );
 
-    for disk in dlist.disks {
+    for disk in &dlist.disks {
         // let fs = if stat.is_network() {
         //     disks.filesystem.cyan()
         // } else {
@@ -77,7 +85,7 @@ fn main() {
             iec(disk.avail),
             percent,
             disk.mount,
-            width = dlist.max_width
+            width = dlist.get_max()
         );
     }
 }
