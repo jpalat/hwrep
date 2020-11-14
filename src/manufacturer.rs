@@ -3,9 +3,11 @@ use std::collections::HashMap;
 use std::fs;
 use std::io::Error;
 use std::path::Path;
+use serde::{Serialize, Deserialize};
 
 use crate::DisplayWidth;
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Manufacturer {
     pub data: HashMap<String, String>,
 }
