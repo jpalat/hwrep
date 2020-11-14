@@ -1,5 +1,5 @@
-extern crate nix;
 extern crate colored;
+extern crate nix;
 
 mod disks;
 use disks::Disks;
@@ -11,10 +11,11 @@ use utils::iec;
 mod network;
 use network::Networks;
 use std::cmp;
+mod manufacturer;
+use manufacturer::Manufacturer;
 
-use nix::unistd;
 use colored::*;
-
+use nix::unistd;
 
 fn main() {
     let mut buf = [0u8; 64];
@@ -48,7 +49,12 @@ fn main() {
         Err(e) => println!("error : {}", e),
         Ok(n) => {
             let width = cmp::max(n.get_max(), 10);
-            println!("\n{:width$} {:>5}", "Interface".yellow(), "Speed".yellow(), width = width);
+            println!(
+                "\n{:width$} {:>5}",
+                "Interface".yellow(),
+                "Speed".yellow(),
+                width = width
+            );
             for network in n.networks {
                 println!(
                     "{:width$} {:>5}",
@@ -96,5 +102,14 @@ fn main() {
             disk.mount,
             width = dlist.get_max()
         );
+    }
+    println!("\n{}", "Id info".yellow());
+    match Manufacturer::new() {
+        Err(e) => println!("Unable to get info. {:?}", e),
+        Ok(m) => {
+            for (topic, detail) in m.data {
+                println!("{:?} : {} ", topic, detail);
+            }
+        }
     }
 }
