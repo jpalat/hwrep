@@ -11,3 +11,5 @@ procfs = "0.8.1"
 num-format = "0.4.0"
 nix = "0.19.0"
 colored = "2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
