@@ -2,7 +2,6 @@ use std::cmp;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Error;
-use std::path::Path;
 use serde::{Serialize, Deserialize};
 
 use crate::DisplayWidth;
@@ -14,7 +13,7 @@ pub struct Manufacturer {
 
 impl Manufacturer {
     pub fn new() -> Result<Manufacturer, Error> {
-        let mut newMan = HashMap::new();
+        let mut new_manufacturer = HashMap::new();
         let base = "/sys/class/dmi/id/";
         let files: Vec<_> = fs::read_dir(base)?
             .into_iter()
@@ -41,17 +40,17 @@ impl Manufacturer {
                     }
                 }
             }
-            newMan.insert(file_name.to_str().unwrap().to_string(), info);
+            new_manufacturer.insert(file_name.to_str().unwrap().to_string(), info);
         }
 
-        return Ok(Manufacturer { data: newMan });
+        return Ok(Manufacturer { data: new_manufacturer });
     }
 }
 
 impl DisplayWidth for Manufacturer {
     fn get_max(&self) -> usize {
         let mut max_width = 0;
-        for (topic, detail) in &self.data {
+        for (topic, _) in &self.data {
             max_width = cmp::max(max_width, topic.len());
         }
         return max_width;
