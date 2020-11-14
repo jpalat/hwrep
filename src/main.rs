@@ -2,20 +2,20 @@ extern crate colored;
 extern crate nix;
 
 mod disks;
-use disks::Disks;
-mod system;
-use system::CPU;
-mod utils;
-use crate::utils::DisplayWidth;
-use utils::iec;
-mod network;
-use network::Networks;
-use std::cmp;
 mod manufacturer;
-use manufacturer::Manufacturer;
+mod network;
+mod system;
+mod utils;
 
+use crate::utils::DisplayWidth;
 use colored::*;
+use disks::Disks;
+use manufacturer::Manufacturer;
+use network::Networks;
 use nix::unistd;
+use std::cmp;
+use system::CPU;
+use utils::iec;
 
 fn main() {
     let mut buf = [0u8; 64];
