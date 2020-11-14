@@ -1,20 +1,21 @@
-extern crate nix;
 extern crate colored;
+extern crate nix;
 
 mod disks;
-use disks::Disks;
-mod system;
-use system::CPU;
-mod utils;
-use crate::utils::DisplayWidth;
-use utils::iec;
+mod manufacturer;
 mod network;
-use network::Networks;
-use std::cmp;
+mod system;
+mod utils;
 
-use nix::unistd;
+use crate::utils::DisplayWidth;
 use colored::*;
-
+use disks::Disks;
+use manufacturer::Manufacturer;
+use network::Networks;
+use nix::unistd;
+use std::cmp;
+use system::CPU;
+use utils::iec;
 
 fn main() {
     let mut buf = [0u8; 64];
@@ -48,7 +49,12 @@ fn main() {
         Err(e) => println!("error : {}", e),
         Ok(n) => {
             let width = cmp::max(n.get_max(), 10);
-            println!("\n{:width$} {:>5}", "Interface".yellow(), "Speed".yellow(), width = width);
+            println!(
+                "\n{:width$} {:>5}",
+                "Interface".yellow(),
+                "Speed".yellow(),
+                width = width
+            );
             for network in n.networks {
                 println!(
                     "{:width$} {:>5}",
@@ -96,5 +102,15 @@ fn main() {
             disk.mount,
             width = dlist.get_max()
         );
+    }
+    println!("\n{}", "Id info".yellow());
+    match Manufacturer::new() {
+        Err(e) => println!("Unable to get info. {:?}", e),
+        Ok(m) => {
+            let width = m.get_max();
+            for (topic, detail) in m.data {
+                println!("{:width$} : {} ", topic, detail, width = width);
+            }
+        }
     }
 }
