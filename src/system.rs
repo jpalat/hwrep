@@ -1,10 +1,11 @@
 use procfs::CpuInfo;
 use procfs::Meminfo;
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::Error;
 use std::path::Path;
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct CPU {
     pub model: String,
     pub physical_cores: usize,   // cores on chip
@@ -56,12 +57,40 @@ impl CPU {
     }
 }
 
-pub fn get_memory() -> u64 {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Memory {
+    pub mem_total: u64,
+    pub swap_total: u64,
+    pub numa_layout: Vec<String>,
+}
+
+impl Memory {
+    pub fn new() -> Memory {
+        let mut numa = Vec::new();
+        match get_numalayout(){
+            Err(_) => {},
+            Ok(s) => numa = s,
+        }
+
+        Memory {
+            mem_total: get_memory(),
+            swap_total: get_swap(),
+            numa_layout: numa,
+        }
+    }
+}
+
+fn get_memory() -> u64 {
     let memory = Meminfo::new().unwrap();
     return memory.mem_total;
 }
 
-pub fn get_numalayout() -> Result<Vec<String>, Error> {
+fn get_swap() -> u64 {
+    let memory = Meminfo::new().unwrap();
+    return memory.swap_total;
+}
+
+fn get_numalayout() -> Result<Vec<String>, Error> {
     let sys_numa = "/sys/devices/system/node/";
     let mut new_vec: Vec<String> = Vec::new();
     let files = fs::read_dir(sys_numa);
