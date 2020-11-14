@@ -11,8 +11,15 @@ mod network;
 use network::Networks;
 use std::cmp;
 
+use nix::unistd;
+
+
 fn main() {
-    println!("Gathering CPU Info");
+    let mut buf = [0u8; 64];
+    let hostname_cstr = unistd::gethostname(&mut buf).expect("Failed getting hostname");
+    let hostname = hostname_cstr.to_str().expect("Hostname wasn't valid UTF-8");
+    println!("Hostname: {}", hostname);
+    println!("CPU Info");
     let cpu = CPU::new();
     println!("Model: {}", cpu.model);
     println!("Cores per Socket: {}", cpu.physical_cores);
