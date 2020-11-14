@@ -1,8 +1,8 @@
+use serde::{Deserialize, Serialize};
 use std::cmp;
 use std::fs;
 use std::io::Error;
 use std::path::Path;
-use serde::{Serialize, Deserialize};
 
 use crate::DisplayWidth;
 

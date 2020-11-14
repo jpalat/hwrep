@@ -8,4 +8,3 @@ pub struct Opts {
     #[clap(short, long, parse(from_occurrences))]
     pub json: i32,
 }
-

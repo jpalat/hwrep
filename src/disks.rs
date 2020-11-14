@@ -1,12 +1,11 @@
+use crate::utils::DisplayWidth;
+use nix::sys::statvfs::statvfs;
+use serde::{Deserialize, Serialize};
 use std::cmp;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process;
-use nix::sys::statvfs::statvfs;
-use crate::utils::DisplayWidth;
-use serde::{Serialize, Deserialize};
-
 
 const FS_SPEC: usize = 0;
 const FS_FILE: usize = 1;

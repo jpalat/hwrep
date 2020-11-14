@@ -1,8 +1,8 @@
+use serde::{Deserialize, Serialize};
 use std::cmp;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Error;
-use serde::{Serialize, Deserialize};
 
 use crate::DisplayWidth;
 
@@ -43,7 +43,9 @@ impl Manufacturer {
             new_manufacturer.insert(file_name.to_str().unwrap().to_string(), info);
         }
 
-        return Ok(Manufacturer { data: new_manufacturer });
+        return Ok(Manufacturer {
+            data: new_manufacturer,
+        });
     }
 }
 
