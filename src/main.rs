@@ -6,6 +6,7 @@ mod manufacturer;
 mod network;
 mod system;
 mod utils;
+mod cliopts;
 
 use crate::utils::DisplayWidth;
 use colored::*;
@@ -16,8 +17,21 @@ use nix::unistd;
 use std::cmp;
 use system::CPU;
 use utils::iec;
+use clap::Clap;
+use cliopts::Opts;
 
 fn main() {
+    let opts: Opts = Opts::parse();
+
+    match opts.json {
+        0 => display(),
+        3 | _=> build_json(),
+    }
+
+    
+}
+
+fn display(){
     let mut buf = [0u8; 64];
     let hostname_cstr = unistd::gethostname(&mut buf).expect("Failed getting hostname");
     let hostname = hostname_cstr.to_str().expect("Hostname wasn't valid UTF-8");
@@ -112,5 +126,105 @@ fn main() {
                 println!("{:width$} : {} ", topic, detail, width = width);
             }
         }
+    }let mut buf = [0u8; 64];
+    let hostname_cstr = unistd::gethostname(&mut buf).expect("Failed getting hostname");
+    let hostname = hostname_cstr.to_str().expect("Hostname wasn't valid UTF-8");
+    println!("Hostname: {}\n", hostname.blue());
+    println!("{}", "CPU Info".yellow());
+    let cpu = CPU::new();
+    println!("Model: {}", cpu.model);
+    println!("Cores per Socket: {}", cpu.physical_cores);
+    println!("Thread(s) per Core: {}", cpu.threads_per_core);
+    println!("Total Cores: {:?}", cpu.execution_units);
+    println!("Sockets: {}", cpu.sockets);
+
+    println!("\n{}", "Memory".yellow());
+    println!("Total Ram: {}", iec(system::get_memory()));
+
+    match system::get_numalayout() {
+        Err(_e) => println!("No NUMA info available."),
+        Ok(nodes) => {
+            println!("\nNUMA layout");
+            for n in nodes {
+                println!("{}", n);
+            }
+        }
     }
+
+    let networks = Networks::new();
+
+    match networks {
+        Err(e) => println!("error : {}", e),
+        Ok(n) => {
+            let width = cmp::max(n.get_max(), 10);
+            println!(
+                "\n{:width$} {:>5}",
+                "Interface".yellow(),
+                "Speed".yellow(),
+                width = width
+            );
+            for network in n.networks {
+                println!(
+                    "{:width$} {:>5}",
+                    network.name,
+                    network.speed,
+                    width = width
+                );
+            }
+        }
+    }
+
+    let dlist = Disks::new();
+
+    let headers = ["Filesystem", "Size", "Used", "Avail", "Use%", "Mounted on"];
+    let headers: Vec<ColoredString> = headers.iter().map(|x| x.yellow()).collect();
+    println!(
+        "\n{:width$} {:>5} {:>5} {:>5} {:>5} {}",
+        headers[0],
+        headers[1],
+        headers[2],
+        headers[3],
+        headers[4],
+        headers[5],
+        width = dlist.get_max()
+    );
+
+    for disk in &dlist.disks {
+        // let fs = if stat.is_network() {
+        //     disks.filesystem.cyan()
+        // } else {
+        //     stat.filesystem.normal()
+        // };
+        let percent = if disk.percent.is_nan() {
+            "    -".to_string()
+        } else {
+            format!("{:>5.1}", disk.percent)
+        };
+        println!(
+            "{:width$} {:>5} {:>5} {:>5} {} {}",
+            disk.filesystem,
+            iec(disk.size),
+            iec(disk.used),
+            iec(disk.avail),
+            percent,
+            disk.mount,
+            width = dlist.get_max()
+        );
+    }
+    println!("\n{}", "Id info".yellow());
+    match Manufacturer::new() {
+        Err(e) => println!("Unable to get info. {:?}", e),
+        Ok(m) => {
+            let width = m.get_max();
+            for (topic, detail) in m.data {
+                println!("{:width$} : {} ", topic, detail, width = width);
+            }
+        }
+    }
+}
+
+fn build_json(){
+    let dlist = Disks::new();
+    let serialized_user = serde_json::to_string(&dlist).unwrap();
+    println!("{}", serialized_user);
 }
