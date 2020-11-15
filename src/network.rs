@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use std::cmp;
 use std::fs;
 use std::io::Error;
@@ -5,7 +6,7 @@ use std::path::Path;
 
 use crate::DisplayWidth;
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Netinterface {
     pub name: String,
     pub speed: String,
@@ -17,6 +18,7 @@ impl Netinterface {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Networks {
     pub networks: Vec<Netinterface>,
 }

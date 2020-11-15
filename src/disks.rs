@@ -1,17 +1,16 @@
+use crate::utils::DisplayWidth;
+use nix::sys::statvfs::statvfs;
+use serde::{Deserialize, Serialize};
 use std::cmp;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process;
 
-use nix::sys::statvfs::statvfs;
-
-use crate::utils::DisplayWidth;
-
 const FS_SPEC: usize = 0;
 const FS_FILE: usize = 1;
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Disk {
     pub filesystem: String,
     pub size: u64,
@@ -36,6 +35,7 @@ impl Disk {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Disks {
     pub disks: Vec<Disk>,
 }

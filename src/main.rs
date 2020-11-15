@@ -1,6 +1,7 @@
 extern crate colored;
 extern crate nix;
 
+mod cliopts;
 mod disks;
 mod manufacturer;
 mod network;
@@ -8,16 +9,28 @@ mod system;
 mod utils;
 
 use crate::utils::DisplayWidth;
+use clap::Clap;
+use cliopts::Opts;
 use colored::*;
 use disks::Disks;
 use manufacturer::Manufacturer;
 use network::Networks;
 use nix::unistd;
 use std::cmp;
+use system::Memory;
 use system::CPU;
 use utils::iec;
 
 fn main() {
+    let opts: Opts = Opts::parse();
+
+    match opts.json {
+        0 => display(),
+        3 | _ => build_json(),
+    }
+}
+
+fn display() {
     let mut buf = [0u8; 64];
     let hostname_cstr = unistd::gethostname(&mut buf).expect("Failed getting hostname");
     let hostname = hostname_cstr.to_str().expect("Hostname wasn't valid UTF-8");
@@ -30,16 +43,17 @@ fn main() {
     println!("Total Cores: {:?}", cpu.execution_units);
     println!("Sockets: {}", cpu.sockets);
 
+    let memory = Memory::new();
     println!("\n{}", "Memory".yellow());
-    println!("Total Ram: {}", iec(system::get_memory()));
+    println!("{:10}: {}", "Total Ram", iec(memory.mem_total));
+    println!("{:10}: {}", "Total Swap", iec(memory.swap_total));
 
-    match system::get_numalayout() {
-        Err(_e) => println!("No NUMA info available."),
-        Ok(nodes) => {
-            println!("\nNUMA layout");
-            for n in nodes {
-                println!("{}", n);
-            }
+    if memory.numa_layout.len() == 0 {
+        println!("No NUMA info available.");
+    } else {
+        println!("\nNUMA layout");
+        for n in memory.numa_layout {
+            println!("{}", n);
         }
     }
 
@@ -113,4 +127,37 @@ fn main() {
             }
         }
     }
+}
+
+fn build_json() {
+    let mut buf = [0u8; 64];
+    let hostname_cstr = unistd::gethostname(&mut buf).expect("Failed getting hostname");
+    let hostname = hostname_cstr.to_str().expect("Hostname wasn't valid UTF-8");
+    let cpu = CPU::new();
+    let memory = Memory::new();
+
+    let dlist = Disks::new().disks;
+    let networks = Networks::new().unwrap().networks;
+    let manu = Manufacturer::new().unwrap().data;
+
+    let json_disk = serde_json::to_string(&dlist).unwrap();
+    let json_network = serde_json::to_string(&networks).unwrap();
+    let json_manu = serde_json::to_string(&manu).unwrap();
+    let json_cpu = serde_json::to_string(&cpu).unwrap();
+    let json_memory = serde_json::to_string(&memory).unwrap();
+
+    // let system = [json_disk, json_network, json_manu];
+    // let serialized_disks = serde_json::to_string(&dlist).unwrap();
+    let system_json = format!(
+        "{{
+        \"hostname\": \"{}\",
+        \"cpu_info\": {}, 
+        \"memory_info\": {}, 
+        \"disk_info\":{},
+        \"networks\": {},
+        \"manufacturer\": {}
+    }}",
+        hostname, json_cpu, json_memory, json_disk, json_network, json_manu
+    );
+    println!("{}", system_json);
 }
