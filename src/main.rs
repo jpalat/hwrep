@@ -131,6 +131,10 @@ fn display() {
 }
 
 fn build_json() {
+    let mut buf = [0u8; 64];
+    let hostname_cstr = unistd::gethostname(&mut buf).expect("Failed getting hostname");
+    let hostname = hostname_cstr.to_str().expect("Hostname wasn't valid UTF-8");
+    let json_hn = format!("{{\"hostname\":\"{}\"}}", hostname);
     let dlist = Disks::new();
     let networks = Networks::new().unwrap();
     let manu = Manufacturer::new().unwrap();
@@ -145,6 +149,6 @@ fn build_json() {
 
     // let system = [json_disk, json_network, json_manu];
     // let serialized_disks = serde_json::to_string(&dlist).unwrap();
-    let system_json = format!("[{}, {}, {}, {}, {}]", json_cpu, json_memory, json_disk, json_network, json_manu);
+    let system_json = format!("[{}, {}, {}, {}, {}, {}]", json_hn, json_cpu, json_memory, json_disk, json_network, json_manu);
     println!("{}", system_json);
 }
