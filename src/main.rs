@@ -149,6 +149,13 @@ fn build_json() {
 
     // let system = [json_disk, json_network, json_manu];
     // let serialized_disks = serde_json::to_string(&dlist).unwrap();
-    let system_json = format!("[{}, {}, {}, {}, {}, {}]", json_hn, json_cpu, json_memory, json_disk, json_network, json_manu);
+    let system_json = format!("{{
+        \"hostname\": \"{}\",
+        \"cpu_info\": {}, 
+        \"memory_info\": {}, 
+        \"disk_info\":{},
+        \"networks\": {},
+        \"manufacturer\": {}
+    }}", hostname, json_cpu, json_memory, json_disk, json_network, json_manu);
     println!("{}", system_json);
 }
