@@ -67,8 +67,8 @@ pub struct Memory {
 impl Memory {
     pub fn new() -> Memory {
         let mut numa = Vec::new();
-        match get_numalayout(){
-            Err(_) => {},
+        match get_numalayout() {
+            Err(_) => {}
             Ok(s) => numa = s,
         }
 
